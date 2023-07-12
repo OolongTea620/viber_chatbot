@@ -4,21 +4,24 @@ import com.sharetreats01.viber_chatbot.dto.callback.request.MessageRequest;
 import com.sharetreats01.viber_chatbot.dto.callback.request.property.State;
 import com.sharetreats01.viber_chatbot.dto.callback.response.MessageResponse;
 import com.sharetreats01.viber_chatbot.util.TrackingDataUtils;
-import com.sharetreats01.viber_chatbot.support.handler.message.MessageHandler;
+import com.sharetreats01.viber_chatbot.infra.viber.sender.MessageSender;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
+import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
-@RequiredArgsConstructor
 public class MessageEventHandler implements CallbackEventHandler<MessageRequest, MessageResponse> {
-    private final Map<State, MessageHandler> handlers;
-    private final TrackingDataUtils trackingDataUtils;
+    private final Map<State, MessageSender> senders;
+
+    public MessageEventHandler(List<MessageSender> senderList) {
+        this.senders = senderList.stream().collect(Collectors.toMap(MessageSender::getSenderKey, Function.identity()));
+    }
 
     @Override
     public Class<MessageRequest> getCallbackType() {
@@ -27,19 +30,16 @@ public class MessageEventHandler implements CallbackEventHandler<MessageRequest,
 
     @Override
     public MessageResponse handleEvent(MessageRequest request) {
-        MessageHandler messageHandler = getHandler(request);
-        messageHandler.handle(request);
+        MessageSender sender = getSender(request);
+        sender.send(request);
         return null;
     }
 
-    private MessageHandler getHandler(MessageRequest request) {
-        if (!StringUtils.hasText(request.getMessage().getTrackingData())) {
-            return handlers.get(State.BRANDS);
-        }
+    protected MessageSender getSender(MessageRequest request) {
+        String trackingData = request.getMessage().getTrackingData();
+        String userReply = request.getMessage().getText();
 
-        if (request.getMessage().getText().equals(State.TREAT.name())) {
-            return handlers.get(State.TREAT);
-        }
-        return handlers.get(trackingDataUtils.getState(request.getMessage().getTrackingData()));
+        log.info("{}", request.getMessage().getTrackingData());
+        return senders.get(TrackingDataUtils.getStateWithReplyText(trackingData,userReply));
     }
 }
