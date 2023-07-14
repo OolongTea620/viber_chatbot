@@ -8,7 +8,8 @@ public enum TreatConstant {
     YOUR_INFO,
     MESSAGE,
     PROMO_CODE,
-    PAYMENT;
+    PAYMENT,
+    DISCONTINUE;
 
     public static TreatConstant fromValue(String value) {
         for (TreatConstant constants : values()) {
