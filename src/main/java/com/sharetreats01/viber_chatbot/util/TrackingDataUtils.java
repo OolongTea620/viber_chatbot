@@ -75,6 +75,30 @@ public class TrackingDataUtils {
     
     
     public static State getStateWithReplyText(String trackingData,String replyText) {
+
+        State curState = TrackingDataUtils.getState(trackingData);
+        String[] parseReply =  replyText.split(DATA_DELIMITER);
+
+        if (parseReply.length < 2) {
+            return curState;
+        }
+
+        State weToGo = State.fromValue(parseReply[0]);
+        switch (weToGo) {
+            case PRODUCTS:
+                break;
+            case PRODUCT_DETAIL:
+                break;
+            case ORDER:
+                break;
+            default:
+                weToGo = curState;
+        }
+        return weToGo;
+    }
+    
+    
+    public static State getStateWithReplyText(String trackingData,String replyText) {
         State curState = getState(trackingData);
         String[] parseReply =  replyText.split(DATA_DELIMITER);
 
