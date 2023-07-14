@@ -8,7 +8,7 @@ import com.sharetreats01.viber_chatbot.util.KeyboardConstants;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ProductRichMediaServiceImpl implements ProductRichMediaService {
+public class ProductRichMediaServiceImpl extends ProductRichMediaService {
     @Override
     public Keyboard getProductDetailRichMedia(ProductDetailResponse productDetail) {
         Keyboard.Button[] buttons = new Keyboard.Button[2];

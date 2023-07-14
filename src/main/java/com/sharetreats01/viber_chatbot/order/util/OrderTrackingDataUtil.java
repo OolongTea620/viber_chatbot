@@ -74,7 +74,7 @@ public class OrderTrackingDataUtil {
         String[] receiverData = datum[0].split("/");
         String[] giverData = datum[1].split("/");
         String message = datum[2];
-        String promoCode = datum[3];
+        String promoCode = "N".equals(datum[3]) ? "" : datum[3] ;
 
         orderMap.put("receiverName",receiverData[0]);
         orderMap.put("receiverPhone",receiverData[1]);
@@ -102,6 +102,29 @@ public class OrderTrackingDataUtil {
 
         OrderByBotRequest orderByBotRequest = OrderByBotRequest.builder()
             .viberId(request.getSender().getId())
+            .productId(productId)
+            .paymentId(paymentId)
+            .receiverName(orderMap.get("receiverName"))
+            .receiverPhone(orderMap.get("receiverPhone"))
+            .giverName(orderMap.get("giverName"))
+            .giverPhone(orderMap.get("giverPhone"))
+            .message(orderMap.get("message"))
+            .build();
+
+        if (orderMap.containsKey("promoCode")) {
+            orderByBotRequest.setPromoCode(orderMap.get("promoCode"));
+        }
+
+        return orderByBotRequest;
+    }
+
+    public static OrderByBotRequest trackingData2OrderRequest(
+        String senderViberId, String trackingData, String paymentId) {
+        HashMap<String, String> orderMap = getOrderData(trackingData);
+        String productId = getProductId(trackingData);
+
+        OrderByBotRequest orderByBotRequest = OrderByBotRequest.builder()
+            .viberId(senderViberId)
             .productId(productId)
             .paymentId(paymentId)
             .receiverName(orderMap.get("receiverName"))

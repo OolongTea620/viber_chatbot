@@ -44,7 +44,7 @@ public class MessageSenderProducts extends AbstractMessageSender implements Mess
     }
 
     @Override
-    protected SendMessageRequest createSendMessageRequest(MessageRequest messageRequest) {
+    protected void createSendMessageRequest(MessageRequest messageRequest) {
         //
         String brandName = messageRequest.getMessage().getText();
         ProductListResponse products = productService.getProducts(brandName);
@@ -52,6 +52,6 @@ public class MessageSenderProducts extends AbstractMessageSender implements Mess
 
         String trackingData = TrackingDataUtils.updateState(messageRequest.getMessage().getTrackingData(),
                 State.PRODUCTS, messageRequest.getMessage().getText());
-        return new SendProductRichMediaMessageRequest(messageRequest.getSender().getId(), 7, richMedia, trackingData);
+        //return new SendProductRichMediaMessageRequest(messageRequest.getSender().getId(), 7, richMedia, trackingData);
     }
 }
