@@ -25,26 +25,76 @@ repositories {
 
 dependencies {
     implementation "com.linecorp.armeria:armeria:1.24.0"
+    implementation platform('com.linecorp.armeria:armeria-bom:1.24.1')
+    implementation 'com.linecorp.armeria:armeria-retrofit2'
+    implementation 'com.squareup.retrofit2:converter-jackson:2.9.0'
+
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-log4j2'
+
+    implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.4'
+
+    implementation 'org.flywaydb:flyway-mysql'
+    implementation 'com.fasterxml.uuid:java-uuid-generator:4.0.1'
+
+    implementation 'io.jsonwebtoken:jjwt:0.9.1'
 
     // Monitoring and Management
     implementation 'io.micrometer:micrometer-registry-prometheus'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
-    // Logging
-//    runtimeOnly 'ch.qos.logback:logback-classic:1.4.7'
-//    runtimeOnly 'org.slf4j:log4j-over-slf4j:1.7.36'
-
     compileOnly 'org.projectlombok:lombok'
-    runtimeOnly 'com.h2database:h2'
     runtimeOnly 'com.mysql:mysql-connector-j'
+
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'com.h2database:h2'
+    testImplementation 'com.squareup.retrofit2:retrofit-mock:2.9.0'
+
+    //Spring Sercurity 추가
+    //implementation 'org.springframework.boot:spring-boot-starter-security'
+
+    //Spring webClient 추가
+    implementation 'org.springframework.boot:spring-boot-starter-webflux:2.7.12'
+
 }
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+configurations.implementation {
+    exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+}
+
+ext.profile = (!project.hasProperty('profile') || !profile) ? 'local' : profile
+
+sourceSets {
+    main {
+        resources {
+            srcDirs "src/main/resources", "src/main/resources-${profile}"
+        }
+    }
+    test {
+        java {
+            srcDir 'src/test/java'
+        }
+        resources {
+            srcDir 'src/test/resources'
+        }
+    }
+}
+
+
+tasks {
+    processResources {
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    }
+    processTestResources {
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    }
 }
 
 jar {

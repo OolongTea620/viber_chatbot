@@ -1,0 +1,16 @@
+spring:
+  config:
+    activate:
+      on-profile: dev
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://mysql:3306/sharetreats
+    username: dlwlgh9412
+    password: dlwlgh9412
+
+logging:
+  config: classpath:log4j2.xml
+
+jasypt:
+  encryptor:
+    bean: jasyptStringEncryptor
